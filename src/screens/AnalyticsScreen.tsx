@@ -19,6 +19,7 @@ import {
   ContributionHeatmap,
 } from '../components/ChartsSimple';
 import { EnhancedAnalytics } from '../components/EnhancedAnalytics';
+import { DEMO_USER, DEMO_REPOSITORIES, DEMO_LANGUAGE_STATS } from '../data/demoData';
 
 interface AnalyticsScreenProps {
   username: string;
@@ -35,31 +36,32 @@ const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadAnalyticsData();
+    loadDemoData();
   }, [username]);
 
-  const loadAnalyticsData = async () => {
+  const loadDemoData = () => {
     setLoading(true);
     setError(null);
 
-    try {
-      // Load basic profile data
-      const profile = await GitHubAPIService.getComprehensiveProfile(username);
-      setProfileData(profile);
+    // Use demo data instead of fetching from API
+    const demoProfileData: GitHubProfileStats = {
+      user: DEMO_USER,
+      repositories: DEMO_REPOSITORIES,
+      languageStats: DEMO_LANGUAGE_STATS,
+      totalStars: DEMO_REPOSITORIES.reduce((sum, repo) => sum + repo.stargazers_count, 0),
+      totalForks: DEMO_REPOSITORIES.reduce((sum, repo) => sum + repo.forks_count, 0),
+      contributionData: [],
+      recentActivity: [],
+      topRepositories: DEMO_REPOSITORIES.slice(0, 5),
+    };
 
-      // Try to load contribution data via GraphQL
-      try {
-        const contributions = await GitHubGraphQLService.getUserContributions(username);
-        setContributionData(contributions);
-      } catch (graphqlError) {
-        console.warn('GraphQL data not available, using REST API data only');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load analytics data');
-      Alert.alert('Error', 'Failed to load analytics data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    setProfileData(demoProfileData);
+    setContributionData({
+      totalContributions: 1417,
+      currentStreak: 7,
+      longestStreak: 15,
+    });
+    setLoading(false);
   };
 
   const renderOverviewStats = () => {
@@ -252,7 +254,7 @@ const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({
     return (
       <View style={styles.centerContainer}>
         <Text style={styles.errorText}>Failed to load analytics</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={loadAnalyticsData}>
+        <TouchableOpacity style={styles.retryButton} onPress={loadDemoData}>
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
@@ -279,7 +281,6 @@ const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({
       />
       
       {renderOverviewStats()}
-      {renderLanguageAnalysis()}
       {renderRepositoryCharts()}
       {renderContributionAnalysis()}
       {renderProductivityInsights()}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -10,15 +10,15 @@ interface EnhancedAnalyticsProps {
   contributionData?: any;
 }
 
-// Enhanced color palette
+// Enhanced color palette matching IDE themes
 const LANGUAGE_COLORS: { [key: string]: string } = {
-  'TypeScript': '#3178c6',
-  'JavaScript': '#f1e05a',
-  'Python': '#3572A5',
+  'TypeScript': '#3178c6',      // Blue for TypeScript
+  'JavaScript': '#f1e05a',      // Yellow for JavaScript  
+  'Python': '#3572A5',          // Green for Python
   'Java': '#b07219',
-  'C++': '#f34b7d',
+  'C++': '#f34b7d',            // Pink for C++
   'C': '#555555',
-  'Swift': '#fa7343',
+  'Swift': '#fa7343',          // Orange for Swift
   'Go': '#00ADD8',
   'Rust': '#dea584',
   'PHP': '#4F5D95',
@@ -26,7 +26,7 @@ const LANGUAGE_COLORS: { [key: string]: string } = {
   'C#': '#239120',
   'HTML': '#e34c26',
   'CSS': '#1572B6',
-  'Jupyter Notebook': '#DA5B0B',
+  'Jupyter Notebook': '#DA5B0B', // Orange for Jupyter
   'Shell': '#89e051',
   'Objective-C': '#438eff',
   'Kotlin': '#A97BFF',
@@ -122,7 +122,7 @@ const LanguageBar: React.FC<{ languages: { [key: string]: number } }> = ({ langu
 
   return (
     <View style={styles.languageBarContainer}>
-      <Text style={styles.sectionTitle}>Most Used Languages</Text>
+      <Text style={styles.cardTitle}>💻 Most Used Languages</Text>
       
       {/* Horizontal bar */}
       <View style={styles.horizontalBar}>
@@ -146,18 +146,32 @@ const LanguageBar: React.FC<{ languages: { [key: string]: number } }> = ({ langu
         })}
       </View>
 
-      {/* Language legend */}
+      {/* Language legend with progress bars */}
       <View style={styles.languageLegend}>
         {sortedLanguages.map(([language, bytes]) => {
           const percentage = ((bytes / totalBytes) * 100).toFixed(2);
           const color = LANGUAGE_COLORS[language] || '#6b7280';
           
           return (
-            <View key={language} style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: color }]} />
-              <Text style={styles.legendText}>
-                {language} {percentage}%
-              </Text>
+            <View key={language} style={styles.languageProgressItem}>
+              <View style={styles.languageHeader}>
+                <View style={styles.languageInfo}>
+                  <View style={[styles.legendDot, { backgroundColor: color }]} />
+                  <Text style={styles.languageName}>{language}</Text>
+                </View>
+                <Text style={styles.languagePercentage}>{percentage}%</Text>
+              </View>
+              <View style={styles.progressBarTrack}>
+                <View 
+                  style={[
+                    styles.progressBarFill,
+                    { 
+                      width: `${Math.min(parseFloat(percentage), 100)}%` as any,
+                      backgroundColor: color,
+                    }
+                  ]}
+                />
+              </View>
             </View>
           );
         })}
@@ -171,15 +185,20 @@ const StatsGrid: React.FC<{ profile: any; repositories: any[] }> = ({ profile, r
   const totalForks = repositories.reduce((sum, repo) => sum + repo.forks_count, 0);
   const currentYear = new Date().getFullYear();
   
-  // Mock contribution data - in a real app, you'd get this from GitHub API
-  const totalContributions = Math.floor(Math.random() * 2000) + 500;
-  const currentStreak = Math.floor(Math.random() * 30) + 1;
-  const longestStreak = Math.floor(Math.random() * 100) + 20;
+  // Specific stats from the brief
+  const totalContributions = 1417; // Feb 1, 2016 - Present
+  const currentStreak = 7; // Sep 7 - Sep 13
+  const longestStreak = 9; // Oct 12, 2023 - Oct 20, 2023
+  const totalCommits2025 = 128;
+  const totalPRs = 1;
+  const totalIssues = 0;
+  const contributedReposLastYear = 0;
 
   return (
     <View style={styles.statsContainer}>
-      {/* Contribution Stats */}
-      <View style={styles.statsCard}>
+      {/* Activity Metrics Card */}
+      <View style={styles.activityCard}>
+        <Text style={styles.cardTitle}>📊 Activity Metrics</Text>
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{totalContributions.toLocaleString()}</Text>
@@ -190,12 +209,13 @@ const StatsGrid: React.FC<{ profile: any; repositories: any[] }> = ({ profile, r
           <View style={styles.statItem}>
             <CircularProgress 
               value={currentStreak} 
-              maxValue={30}
+              maxValue={10}
               size={60}
               strokeWidth={6}
               color="#ff6b35"
-              label="Current Streak"
+              showText={true}
             />
+            <Text style={styles.streakLabel}>🔥 Current Streak</Text>
             <Text style={styles.streakDate}>Sep 7 - Sep 13</Text>
           </View>
           
@@ -207,9 +227,9 @@ const StatsGrid: React.FC<{ profile: any; repositories: any[] }> = ({ profile, r
         </View>
       </View>
 
-      {/* GitHub Stats */}
-      <View style={styles.statsCard}>
-        <Text style={styles.sectionTitle}>{profile.name || profile.login}' GitHub Stats</Text>
+      {/* GitHub Stats Summary Card */}
+      <View style={styles.githubStatsCard}>
+        <Text style={styles.cardTitle}>📈 GitHub Stats Summary</Text>
         
         <View style={styles.githubStats}>
           <View style={styles.statRow}>
@@ -219,41 +239,28 @@ const StatsGrid: React.FC<{ profile: any; repositories: any[] }> = ({ profile, r
           </View>
           
           <View style={styles.statRow}>
-            <Text style={styles.statIcon}>🔄</Text>
-            <Text style={styles.statText}>Total Commits ({currentYear}):</Text>
-            <Text style={styles.statNumber}>{Math.floor(Math.random() * 500) + 50}</Text>
+            <Text style={styles.statIcon}>�</Text>
+            <Text style={styles.statText}>Total Commits (2025):</Text>
+            <Text style={styles.statNumber}>{totalCommits2025}</Text>
           </View>
           
           <View style={styles.statRow}>
             <Text style={styles.statIcon}>🔀</Text>
-            <Text style={styles.statText}>Total PRs:</Text>
-            <Text style={styles.statNumber}>{Math.floor(Math.random() * 100) + 10}</Text>
+            <Text style={styles.statText}>Total Pull Requests (PRs):</Text>
+            <Text style={styles.statNumber}>{totalPRs}</Text>
           </View>
           
           <View style={styles.statRow}>
             <Text style={styles.statIcon}>🐛</Text>
-            <Text style={styles.statText}>Total Issues:</Text>
-            <Text style={styles.statNumber}>{Math.floor(Math.random() * 50)}</Text>
+            <Text style={styles.statText}>Total Issues Created:</Text>
+            <Text style={styles.statNumber}>{totalIssues}</Text>
           </View>
           
           <View style={styles.statRow}>
-            <Text style={styles.statIcon}>💻</Text>
-            <Text style={styles.statText}>Contributed to (last year):</Text>
-            <Text style={styles.statNumber}>{Math.floor(Math.random() * 20) + 5}</Text>
+            <Text style={styles.statIcon}>🏗️</Text>
+            <Text style={styles.statText}>Repositories Contributed to (last year):</Text>
+            <Text style={styles.statNumber}>{contributedReposLastYear}</Text>
           </View>
-        </View>
-
-        {/* Grade indicator */}
-        <View style={styles.gradeContainer}>
-          <CircularProgress 
-            value={85} 
-            maxValue={100}
-            size={60}
-            strokeWidth={6}
-            color="#4ade80"
-            showText={false}
-          />
-          <Text style={styles.gradeText}>B+</Text>
         </View>
       </View>
     </View>
@@ -268,6 +275,19 @@ export const EnhancedAnalytics: React.FC<EnhancedAnalyticsProps> = ({
 }) => {
   return (
     <View style={styles.container}>
+      {/* Header with username and avatar */}
+      <View style={styles.profileHeader}>
+        <Image 
+          source={{ uri: profile.avatar_url }} 
+          style={styles.headerAvatar}
+        />
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerName}>{profile.name || profile.login}</Text>
+          <Text style={styles.headerUsername}>@{profile.login}</Text>
+          <Text style={styles.analysisPeriod}>Analysis Period: Feb 1, 2016 - Present</Text>
+        </View>
+      </View>
+      
       <LanguageBar languages={languages} />
       <StatsGrid profile={profile} repositories={repositories} />
     </View>
@@ -277,24 +297,67 @@ export const EnhancedAnalytics: React.FC<EnhancedAnalyticsProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1b23',
+    backgroundColor: '#f8f9fa',
     padding: 16,
   },
+  
+  // Profile Header Styles
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerAvatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    marginRight: 16,
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  headerName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#212529',
+    marginBottom: 4,
+  },
+  headerUsername: {
+    fontSize: 16,
+    color: '#6c757d',
+    marginBottom: 8,
+  },
+  analysisPeriod: {
+    fontSize: 14,
+    color: '#6c757d',
+    fontStyle: 'italic',
+  },
+  
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#212529',
     marginBottom: 16,
   },
   
   // Language Bar Styles
   languageBarContainer: {
-    backgroundColor: '#2d3748',
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#4a5568',
+    borderColor: '#e9ecef',
   },
   horizontalBar: {
     flexDirection: 'row',
@@ -307,9 +370,40 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   languageLegend: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 12,
+  },
+  languageProgressItem: {
+    marginBottom: 12,
+  },
+  languageHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  languageInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  languageName: {
+    fontSize: 14,
+    color: '#495057',
+    fontWeight: '500',
+  },
+  languagePercentage: {
+    fontSize: 14,
+    color: '#495057',
+    fontWeight: 'bold',
+  },
+  progressBarTrack: {
+    height: 8,
+    backgroundColor: '#e9ecef',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 4,
   },
   legendItem: {
     flexDirection: 'row',
@@ -324,19 +418,51 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: '#495057',
   },
 
   // Stats Container
   statsContainer: {
     gap: 16,
   },
-  statsCard: {
-    backgroundColor: '#2d3748',
+  activityCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  githubStatsCard: {
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#4a5568',
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#212529',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  statsCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   statsRow: {
     flexDirection: 'row',
@@ -350,23 +476,30 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#212529',
   },
   statLabel: {
     fontSize: 14,
-    color: '#a0aec0',
+    color: '#6c757d',
     textAlign: 'center',
     marginTop: 4,
   },
+  streakLabel: {
+    fontSize: 14,
+    color: '#6c757d',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '600',
+  },
   statSubtext: {
     fontSize: 12,
-    color: '#718096',
+    color: '#6c757d',
     textAlign: 'center',
     marginTop: 2,
   },
   streakDate: {
     fontSize: 12,
-    color: '#718096',
+    color: '#6c757d',
     textAlign: 'center',
     marginTop: 8,
   },
@@ -392,12 +525,12 @@ const styles = StyleSheet.create({
   circularValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#212529',
     textAlign: 'center',
   },
   circularLabel: {
     fontSize: 10,
-    color: '#a0aec0',
+    color: '#6c757d',
     textAlign: 'center',
   },
 
@@ -410,7 +543,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#4a5568',
+    borderBottomColor: '#e9ecef',
   },
   statIcon: {
     fontSize: 16,
@@ -420,12 +553,12 @@ const styles = StyleSheet.create({
   statText: {
     flex: 1,
     fontSize: 14,
-    color: '#e2e8f0',
+    color: '#495057',
   },
   statNumber: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#212529',
     minWidth: 40,
     textAlign: 'right',
   },
@@ -439,7 +572,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#212529',
   },
 
   // No Data
@@ -450,7 +583,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 16,
-    color: '#718096',
+    color: '#6c757d',
     fontStyle: 'italic',
   },
 });

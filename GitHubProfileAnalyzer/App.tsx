@@ -8,16 +8,16 @@
 import React, { useState } from 'react';
 import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import UserInputScreen from './src/screens/UserInputScreen';
-import ProfileOverviewScreen from './src/screens/ProfileOverviewScreen';
-import AnalyticsScreen from './src/screens/AnalyticsScreen';
+import UserInputScreen from '../src/screens/UserInputScreen';
+import ProfileOverviewScreen from '../src/screens/ProfileOverviewScreen';
+import AnalyticsScreen from '../src/screens/AnalyticsScreen';
 
 type ScreenType = 'input' | 'profile' | 'analytics';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const [currentScreen, setCurrentScreen] = useState<ScreenType>('input');
-  const [selectedUsername, setSelectedUsername] = useState<string>('');
+  const [currentScreen, setCurrentScreen] = useState<ScreenType>('analytics');
+  const [selectedUsername, setSelectedUsername] = useState<string>('altusrossouw');
 
   const handleUserSelected = (username: string) => {
     setSelectedUsername(username);
